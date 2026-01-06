@@ -1,3 +1,4 @@
+
 const int waterPump = 7;
 const int growLight = 6;
 const int fanCooler = 5;
@@ -37,7 +38,21 @@ void loop()
   Serial.print("Moisture: "); Serial.print(moisture);
   Serial.print(" | Light Intensity: "); Serial.print(lightIntensity);
   Serial.print(" | Temperature: "); Serial.print(temperature);
-  if moisture 
+  if (moisture < 500) {
+    digitalWrite(waterPump, HIGH);
+    delay(1000);
+    digitalWrite(waterPump, LOW);
+  }
+  if (lightIntensity < 300) {
+    digitalWrite(growLight, HIGH);
+    delay(1000);
+    digitalWrite(growLight, LOW);
+  }
+  if (temperature > 200) {
+    digitalWrite(fanCooler, HIGH);
+    delay(1000);
+    digitalWrite(fanCooler, LOW);
+  }
   
   delay(5000);
   
