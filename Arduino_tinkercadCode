@@ -1,59 +1,63 @@
+#include <LiquidCrystal.h>
 
-const int waterPump = 7;
-const int growLight = 6;
-const int fanCooler = 5;
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
-int moisture = 0;
 int lightIntensity = 0;
-int temperature = 0;
+String brightness = "";
 
 void setup()
 {
-  
-  Serial.begin(9600);
-  pinMode(A0, OUTPUT);
+  pinMode(A0, OUTPUT); //set pins
   pinMode(A1, INPUT);
-  pinMode(A2, INPUT);
-  pinMode(A3, INPUT);
-  
-  pinMode(waterPump, OUTPUT);
-  pinMode(growLight, OUTPUT);
-  pinMode(fanCooler, OUTPUT);
+  pinMode(2, OUTPUT); //GrowLights
+
+  Serial.begin(9600);
+
+  lcd.begin(16, 2); // Set up the number of columns and rows on the LCD.
+}
+
+void timeOfDay() {
+  if (lightIntensity > 80) {
+  digitalWrite(2, LOW);
+  brightness = "Very Bright";
+}
+else if (lightIntensity > 50) {
+  digitalWrite(2, LOW);
+  brightness = "Bright";
+}
+else if (lightIntensity > 30) {
+  digitalWrite(2, LOW);
+  brightness = "Normal";
+}
+else if (lightIntensity > 20) {
+  digitalWrite(2, HIGH);
+  brightness = "Dim";
+}
+else {
+  digitalWrite(2, HIGH);
+  brightness = "Dark";
+}
 }
 
 void loop()
 {
   // Apply power to the soil moisture sensor
   digitalWrite(A0, HIGH);
-  moisture = analogRead(A1);
-  lightIntensity = analogRead(A2);
-  temperature = analogRead(A3);
+  delay(10); // Wait for 10 millisecond(s)
+  lightIntensity = analogRead(A1);
   // Turn off the sensor to reduce corrosion
   digitalWrite(A0, LOW);
-  
-  digitalWrite(waterPump, LOW);
-  digitalWrite(growLight, LOW);
-  digitalWrite(fanCooler, LOW);
 
-  Serial.print("Moisture: "); Serial.print(moisture);
-  Serial.print(" | Light Intensity: "); Serial.print(lightIntensity);
-  Serial.print(" | Temperature: "); Serial.print(temperature);
-  if (moisture < 500) {
-    digitalWrite(waterPump, HIGH);
-    delay(1000);
-    digitalWrite(waterPump, LOW);
-  }
-  if (lightIntensity < 300) {
-    digitalWrite(growLight, HIGH);
-    delay(1000);
-    digitalWrite(growLight, LOW);
-  }
-  if (temperature > 200) {
-    digitalWrite(fanCooler, HIGH);
-    delay(1000);
-    digitalWrite(fanCooler, LOW);
-  }
-  
-  delay(5000);
-  
+  // ensure LCD is clear
+  lcd.clear();
+  // set the cursor to column 0, line 1
+  lcd.setCursor(0, 0);
+  // Print a message to the LCD.
+  lcd.print("light intensity:");
+  // column 0, line 1
+  lcd.setCursor(0, 1);
+  // print the number of seconds since reset:
+  timeOfDay();
+  lcd.print(brightness);
+  delay(1000); // Wait for 1000 millisecond(s)
 }
