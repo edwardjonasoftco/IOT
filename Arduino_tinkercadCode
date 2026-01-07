@@ -3,6 +3,9 @@
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 int lightIntensity = 0;
+int temperature = 0;
+int humidity = 0;
+int soilHumidity = 0;
 String brightness = "";
 
 void setup()
@@ -10,6 +13,7 @@ void setup()
   pinMode(A0, OUTPUT); //set pins
   pinMode(A1, INPUT);
   pinMode(2, OUTPUT); //GrowLights
+  pinMode(3, OUTPUT); //Fan
 
   Serial.begin(9600);
 
@@ -45,19 +49,68 @@ void loop()
   digitalWrite(A0, HIGH);
   delay(10); // Wait for 10 millisecond(s)
   lightIntensity = analogRead(A1);
-  // Turn off the sensor to reduce corrosion
+//  soilHumidity = analogRead();
+  // Turn off the sensor to reduce metal corrosion
   digitalWrite(A0, LOW);
 
+  //display Light Intensity
   // ensure LCD is clear
   lcd.clear();
   // set the cursor to column 0, line 1
   lcd.setCursor(0, 0);
   // Print a message to the LCD.
-  lcd.print("light intensity:");
+  lcd.print("Light Intensity:");
   // column 0, line 1
   lcd.setCursor(0, 1);
-  // print the number of seconds since reset:
+
   timeOfDay();
+
   lcd.print(brightness);
-  delay(1000); // Wait for 1000 millisecond(s)
+  delay(1000); // Wait for 5000 millisecond(s)
+
+  //display Temperature and Humidity
+  // ensure LCD is clear
+  lcd.clear();
+  // set the cursor to column 0, line 0
+  lcd.setCursor(0, 0);
+  lcd.print("Temperature:");
+  // column 13, line 0
+  lcd.setCursor(13, 0);
+  lcd.print(temperature);
+  lcd.print("C");
+  // set the cursor to column 0, line 1
+  lcd.setCursor(0, 1);
+  lcd.print("Humidity:");
+  // column 10, line 1
+  lcd.setCursor(10, 1);
+  lcd.print(humidity);
+  lcd.print("%");
+  //strawberries struggle to grow above 27C
+  if (temperature > 27) {
+    digitalWrite(3, HIGH);
+  }
+  else {
+  digitalWrite(3, LOW);
+  }
+  delay(1000); // Wait for 5000 millisecond(s)
+
+  //display Soil Humidity
+  // ensure LCD is clear
+  lcd.clear();
+  // set the cursor to column 0, line 0
+  lcd.setCursor(0, 0);
+  lcd.print("Soil Humidity:");
+  // column 0, line 1
+  lcd.setCursor(0, 1);
+  lcd.print(soilHumidity);
+  lcd.print("%");
+  // set the cursor to column 0, line 1
+  //strawberries struggle to grow above 27C
+  if (soilHumidity < 65) {
+    digitalWrite(4, HIGH);
+  }
+  else {
+  digitalWrite(4, LOW);
+  }
+  delay(10000); // Wait for 5000 millisecond(s)
 }
